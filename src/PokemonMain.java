@@ -1,62 +1,96 @@
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Scanner;
 
 public class PokemonMain {
+    public static final String NEW_POKEMON = "New pokemon found!";
+    public static final String[] TEST_EXAMPLES = {
+            "E", // Correct output: 2
+            "NESO", // Correct output: 4
+            "NSNSNSNSNS", // Correct output: 2
+            "ENOEONENEOOSS", // Correct output: 9
+            "NOESNSEOSNEOSSNOEOON" // Correct output: 9
+    };
+
     public static void main(String[] args) throws Exception {
-        String[] testingMoveSequences = new String[] {
-                "E", // Correct output: 2
-                "NESO", // Correct output: 4
-                "NSNSNSNSNS", // Correct output: 2
-                "ENOEONENEOOSS", // Correct output: 9
-                "NOESNSEOSNEOSSNOEOON" // Correct output: 9
-        };
 
-        // Init program
-        HashMap<Coordinate, String> visitedCoordinates = new HashMap<>();
-        Coordinate currentCoordinate = new Coordinate(0, 0);
-        visitedCoordinates.put(currentCoordinate, "New pokemon!");
+        // executeTestExamples(new HashMap<>(), new Coordinate(0,0)); // Uncomment to execute example tests
 
+        Scanner s = new Scanner(System.in);
+        System.out.print("Escreve uma sequência de movimentos (exemplos: 'E', 'NESO', 'NSNSNSNS'): ");
+
+        String inputMoveSequence = s.nextLine().trim();
+
+        int output = findPokemons(
+                inputMoveSequence,
+                new HashMap<>(),
+                new Coordinate(0, 0) // Initial position
+        );
+
+        System.out.println("Captured Pokemons: " + output);
+    }
+
+    /**
+     * Returns the number of found Pokemons after a given move sequence.
+     * @param input
+     * @param visitedCoordinates
+     * @param currentCoordinate
+     * @return
+     * @throws Exception
+     */
+    private static int findPokemons(String input, HashMap<Coordinate, String> visitedCoordinates, Coordinate currentCoordinate) throws Exception {
+
+        visitedCoordinates.put(currentCoordinate, NEW_POKEMON); // Register initial position
         int capturedPokemons = 1;
 
-        for (String input : testingMoveSequences) { // To iterate through the multiple tests. Just needed for testing multiple inputs at once.
-            for (char movement : input.toCharArray()) {
-                if (movement == 'N') {
-                    currentCoordinate.goNorth();
-                } else if (movement == 'S') {
-                    currentCoordinate.goSouth();
-                } else if (movement == 'E') {
-                    currentCoordinate.goEast();
-                } else if (movement == 'O') {
-                    currentCoordinate.goWest();
-                } else {
-                    throw new Exception("Invalid input!");
-                }
-
-                if (visitedCoordinates.get(currentCoordinate) == null) {
-                    capturedPokemons++;
-                    visitedCoordinates.put(currentCoordinate, "New pokemon!");
-                }
+        for (char movement : input.toCharArray()) { // Iterate through the movements
+            if (movement == 'N') {
+                currentCoordinate.goNorth();
+            } else if (movement == 'S') {
+                currentCoordinate.goSouth();
+            } else if (movement == 'E') {
+                currentCoordinate.goEast();
+            } else if (movement == 'O') {
+                currentCoordinate.goWest();
+            } else {
+                throw new Exception("Invalid input!");
             }
+
+            if (visitedCoordinates.get(currentCoordinate) == null) {
+                capturedPokemons++;
+                visitedCoordinates.put(currentCoordinate, NEW_POKEMON);
+            }
+        }
+
+        return capturedPokemons;
+    }
+
+    /**
+     * Executes the examples defined in TEST_EXAMPLES.
+     * @param visitedCoordinates
+     * @param currentCoordinate
+     * @throws Exception
+     */
+    private static void executeTestExamples(HashMap<Coordinate, String> visitedCoordinates, Coordinate currentCoordinate) throws Exception {
+        for (String input : TEST_EXAMPLES) {
 
             // Output results
             System.out.println("---------- TEST input: " + input + " ----------");
-            System.out.println("Captured Pokemons: " + capturedPokemons);
+            System.out.println("Captured Pokemons: " + findPokemons(input, visitedCoordinates, currentCoordinate));
 
-            // Reset program
+            // Clear HashMap and Coordinate
             currentCoordinate.reset();
             visitedCoordinates.clear();
-            visitedCoordinates.put(currentCoordinate, "New pokemon!");
-            capturedPokemons = 1;
         }
     }
 
     /**
-     * Helper function to generate random move sequences with a given size
+     * Helper function to generate random move sequences with a given size.
      * @param size
      * @return
      * @throws Exception
      */
-    private static String generateRandomMoveSequenceInput(int size) throws Exception {
+    private static String generateRandomMoveSequence(int size) throws Exception {
         if (size <= 0) {
             throw new Exception("Invalid size!");
         }
