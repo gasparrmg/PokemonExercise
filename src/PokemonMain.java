@@ -18,7 +18,7 @@ public class PokemonMain {
 
         int capturedPokemons = 1;
 
-        for (String input : testingMoveSequences) { // To iterate through the multiple tests. Just needed for testing.
+        for (String input : testingMoveSequences) { // To iterate through the multiple tests. Just needed for testing multiple inputs at once.
             for (char movement : input.toCharArray()) {
                 if (movement == 'N') {
                     currentCoordinate.goNorth();
